@@ -1,0 +1,2 @@
+# liftaholic_backend_api
+liftaholicのバックエンドAPI開発用のリポジトリ
