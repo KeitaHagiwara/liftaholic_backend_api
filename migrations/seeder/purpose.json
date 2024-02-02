@@ -1,0 +1,52 @@
+[
+    {
+        "purpose_no": 0,
+        "purpose_name": "ベース",
+        "purpose_comment": "筋肥大と引き締めに対応"
+    },
+    {
+        "purpose_no": 1,
+        "purpose_name": "筋肥大",
+        "purpose_comment": "筋肉を肥大化させる"
+    },
+    {
+        "purpose_no": 2,
+        "purpose_name": "引き締め",
+        "purpose_comment": "脂肪を減らして身体を引き締める"
+    },
+    {
+        "purpose_no": 3,
+        "purpose_name": "パフォーマンスアップ（短距離）",
+        "purpose_comment": "スプリント力を上げる"
+    },
+    {
+        "purpose_no": 4,
+        "purpose_name": "パフォーマンスアップ（長距離）",
+        "purpose_comment": "上体が前後左右にブレないようにバランスを安定させる"
+    },
+    {
+        "purpose_no": 5,
+        "purpose_name": "パフォーマンスアップ（跳躍）",
+        "purpose_comment": "足首、膝、股関節を連動させ、力を効率よく伝える"
+    },
+    {
+        "purpose_no": 6,
+        "purpose_name": "パフォーマンスアップ（蹴る）",
+        "purpose_comment": "体をひねり、上半身と下半身を連動させる"
+    },
+    {
+        "purpose_no": 7,
+        "purpose_name": "パフォーマンスアップ（打つ・突く）",
+        "purpose_comment": "テイクバックでしっかりタメを作り、前方に体重移動しながら関節を連動させる"
+    },
+    {
+        "purpose_no": 8,
+        "purpose_name": "パフォーマンスアップ（投げる・振り下ろす）",
+        "purpose_comment": "全身を使って後ろに大きくタメを作ってしならせるように関節を連動させる"
+    },
+    {
+        "purpose_no": 9,
+        "purpose_name": "パフォーマンスアップ（切り返す）",
+        "purpose_comment": "止まった姿勢から素早く動きを切り返す"
+    }
+]

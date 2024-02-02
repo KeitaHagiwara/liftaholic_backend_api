@@ -1,0 +1,27 @@
+[
+    {
+        "effectiveness_id": 1,
+        "effectiveness_rank": 1,
+        "effectiveness_name": "超低"
+    },
+    {
+        "effectiveness_id": 2,
+        "effectiveness_rank": 2,
+        "effectiveness_name": "低"
+    },
+    {
+        "effectiveness_id": 3,
+        "effectiveness_rank": 3,
+        "effectiveness_name": "中"
+    },
+    {
+        "effectiveness_id": 4,
+        "effectiveness_rank": 4,
+        "effectiveness_name": "高"
+    },
+    {
+        "effectiveness_id": 5,
+        "effectiveness_rank": 5,
+        "effectiveness_name": "超高"
+    }
+]

@@ -1,0 +1,254 @@
+[
+    {
+        "part_no": 0,
+        "part_name": "胸",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 1,
+        "part_name": "胸",
+        "sub_part_name": "上部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 2,
+        "part_name": "胸",
+        "sub_part_name": "中部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 3,
+        "part_name": "胸",
+        "sub_part_name": "下部・サイド",
+        "part_comment": ""
+    },
+    {
+        "part_no": 4,
+        "part_name": "胸",
+        "sub_part_name": "中央部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 10,
+        "part_name": "肩",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 11,
+        "part_name": "肩",
+        "sub_part_name": "三角筋前部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 12,
+        "part_name": "肩",
+        "sub_part_name": "三角筋後部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 13,
+        "part_name": "肩",
+        "sub_part_name": "三角筋側部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 14,
+        "part_name": "肩",
+        "sub_part_name": "僧帽筋上部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 20,
+        "part_name": "腕",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 21,
+        "part_name": "腕",
+        "sub_part_name": "上腕二頭筋（短頭）",
+        "part_comment": ""
+    },
+    {
+        "part_no": 22,
+        "part_name": "腕",
+        "sub_part_name": "上腕二頭筋（長頭）",
+        "part_comment": ""
+    },
+    {
+        "part_no": 23,
+        "part_name": "腕",
+        "sub_part_name": "上腕三頭筋（内側頭）",
+        "part_comment": ""
+    },
+    {
+        "part_no": 24,
+        "part_name": "腕",
+        "sub_part_name": "上腕三頭筋（外側頭）",
+        "part_comment": ""
+    },
+    {
+        "part_no": 25,
+        "part_name": "腕",
+        "sub_part_name": "前腕",
+        "part_comment": ""
+    },
+    {
+        "part_no": 30,
+        "part_name": "腹",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 31,
+        "part_name": "腹",
+        "sub_part_name": "上部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 32,
+        "part_name": "腹",
+        "sub_part_name": "下部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 33,
+        "part_name": "腹",
+        "sub_part_name": "サイド（上部）",
+        "part_comment": ""
+    },
+    {
+        "part_no": 34,
+        "part_name": "腹",
+        "sub_part_name": "サイド（下部）",
+        "part_comment": ""
+    },
+    {
+        "part_no": 40,
+        "part_name": "背中",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 41,
+        "part_name": "背中",
+        "sub_part_name": "広背筋",
+        "part_comment": ""
+    },
+    {
+        "part_no": 42,
+        "part_name": "背中",
+        "sub_part_name": "僧帽筋中部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 43,
+        "part_name": "背中",
+        "sub_part_name": "僧帽筋下部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 44,
+        "part_name": "背中",
+        "sub_part_name": "脊柱起立筋",
+        "part_comment": ""
+    },
+    {
+        "part_no": 50,
+        "part_name": "お尻",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 51,
+        "part_name": "お尻",
+        "sub_part_name": "大臀筋上部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 52,
+        "part_name": "お尻",
+        "sub_part_name": "大臀筋下部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 53,
+        "part_name": "お尻",
+        "sub_part_name": "中臀筋",
+        "part_comment": ""
+    },
+    {
+        "part_no": 60,
+        "part_name": "太もも",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 61,
+        "part_name": "太もも",
+        "sub_part_name": "前面",
+        "part_comment": ""
+    },
+    {
+        "part_no": 62,
+        "part_name": "太もも",
+        "sub_part_name": "側面",
+        "part_comment": ""
+    },
+    {
+        "part_no": 63,
+        "part_name": "太もも",
+        "sub_part_name": "後面",
+        "part_comment": ""
+    },
+    {
+        "part_no": 70,
+        "part_name": "ふくらはぎ",
+        "sub_part_name": "全体・多関節",
+        "part_comment": ""
+    },
+    {
+        "part_no": 71,
+        "part_name": "ふくらはぎ",
+        "sub_part_name": "上部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 72,
+        "part_name": "ふくらはぎ",
+        "sub_part_name": "サイド",
+        "part_comment": ""
+    },
+    {
+        "part_no": 73,
+        "part_name": "ふくらはぎ",
+        "sub_part_name": "下部",
+        "part_comment": ""
+    },
+    {
+        "part_no": 80,
+        "part_name": "体幹",
+        "sub_part_name": "腹横筋",
+        "part_comment": "腹部の最も深層にある筋肉"
+    },
+    {
+        "part_no": 81,
+        "part_name": "体幹",
+        "sub_part_name": "多裂筋",
+        "part_comment": "背骨や腰部についている筋肉"
+    },
+    {
+        "part_no": 82,
+        "part_name": "体幹",
+        "sub_part_name": "横隔膜",
+        "part_comment": "胸部の下部にあり、腹式呼吸をするときに働く筋肉"
+    },
+    {
+        "part_no": 83,
+        "part_name": "体幹",
+        "sub_part_name": "骨盤底筋群",
+        "part_comment": "骨盤の下部にあり、内臓を支えている筋肉"
+    }
+]

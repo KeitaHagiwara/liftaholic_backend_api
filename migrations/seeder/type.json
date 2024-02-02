@@ -1,0 +1,12 @@
+[
+    {
+        "type_no": 0,
+        "type_name": "プッシュ",
+        "type_comment": "押すタイプのトレーニング種目"
+    },
+    {
+        "type_no": 1,
+        "type_name": "プル",
+        "type_comment": "引くタイプのトレーニング種目"
+    }
+]

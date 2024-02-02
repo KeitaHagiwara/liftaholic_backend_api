@@ -1,0 +1,29 @@
+[
+    {
+        "training_no": 0,
+        "training_name": "ベンチプレス",
+        "description": "",
+        "part_no": 0,
+        "purpose_no": 0,
+        "type_no": 0,
+        "event_no": 0
+    },
+    {
+        "training_no": 1,
+        "training_name": "プッシュアップ",
+        "description": "",
+        "part_no": 0,
+        "purpose_no": 0,
+        "type_no": 0,
+        "event_no": 0
+    },
+    {
+        "training_no": 2,
+        "training_name": "インクラインダンベルプレス",
+        "description": "",
+        "part_no": 0,
+        "purpose_no": 0,
+        "type_no": 0,
+        "event_no": 0
+    }
+]

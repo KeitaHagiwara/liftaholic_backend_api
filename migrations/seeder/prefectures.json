@@ -1,0 +1,190 @@
+[
+    {
+        "prefecture_id": 1,
+        "prefecture_name": "北海道"
+    },
+    {
+        "prefecture_id": 2,
+        "prefecture_name": "青森県"
+    },
+    {
+        "prefecture_id": 3,
+        "prefecture_name": "岩手県"
+    },
+    {
+        "prefecture_id": 4,
+        "prefecture_name": "宮城県"
+    },
+    {
+        "prefecture_id": 5,
+        "prefecture_name": "秋田県"
+    },
+    {
+        "prefecture_id": 6,
+        "prefecture_name": "山形県"
+    },
+    {
+        "prefecture_id": 7,
+        "prefecture_name": "福島県"
+    },
+    {
+        "prefecture_id": 8,
+        "prefecture_name": "茨城県"
+    },
+    {
+        "prefecture_id": 9,
+        "prefecture_name": "栃木県"
+    },
+    {
+        "prefecture_id": 10,
+        "prefecture_name": "群馬県"
+    },
+    {
+        "prefecture_id": 11,
+        "prefecture_name": "埼玉県"
+    },
+    {
+        "prefecture_id": 12,
+        "prefecture_name": "千葉県"
+    },
+    {
+        "prefecture_id": 13,
+        "prefecture_name": "東京都"
+    },
+    {
+        "prefecture_id": 14,
+        "prefecture_name": "神奈川県"
+    },
+    {
+        "prefecture_id": 15,
+        "prefecture_name": "新潟県"
+    },
+    {
+        "prefecture_id": 16,
+        "prefecture_name": "富山県"
+    },
+    {
+        "prefecture_id": 17,
+        "prefecture_name": "石川県"
+    },
+    {
+        "prefecture_id": 18,
+        "prefecture_name": "福井県"
+    },
+    {
+        "prefecture_id": 19,
+        "prefecture_name": "山梨県"
+    },
+    {
+        "prefecture_id": 20,
+        "prefecture_name": "長野県"
+    },
+    {
+        "prefecture_id": 21,
+        "prefecture_name": "岐阜県"
+    },
+    {
+        "prefecture_id": 22,
+        "prefecture_name": "静岡県"
+    },
+    {
+        "prefecture_id": 23,
+        "prefecture_name": "愛知県"
+    },
+    {
+        "prefecture_id": 24,
+        "prefecture_name": "三重県"
+    },
+    {
+        "prefecture_id": 25,
+        "prefecture_name": "滋賀県"
+    },
+    {
+        "prefecture_id": 26,
+        "prefecture_name": "京都府"
+    },
+    {
+        "prefecture_id": 27,
+        "prefecture_name": "大阪府"
+    },
+    {
+        "prefecture_id": 28,
+        "prefecture_name": "兵庫県"
+    },
+    {
+        "prefecture_id": 29,
+        "prefecture_name": "奈良県"
+    },
+    {
+        "prefecture_id": 30,
+        "prefecture_name": "和歌山県"
+    },
+    {
+        "prefecture_id": 31,
+        "prefecture_name": "鳥取県"
+    },
+    {
+        "prefecture_id": 32,
+        "prefecture_name": "島根県"
+    },
+    {
+        "prefecture_id": 33,
+        "prefecture_name": "岡山県"
+    },
+    {
+        "prefecture_id": 34,
+        "prefecture_name": "広島県"
+    },
+    {
+        "prefecture_id": 35,
+        "prefecture_name": "山口県"
+    },
+    {
+        "prefecture_id": 36,
+        "prefecture_name": "徳島県"
+    },
+    {
+        "prefecture_id": 37,
+        "prefecture_name": "香川県"
+    },
+    {
+        "prefecture_id": 38,
+        "prefecture_name": "愛媛県"
+    },
+    {
+        "prefecture_id": 39,
+        "prefecture_name": "高知県"
+    },
+    {
+        "prefecture_id": 40,
+        "prefecture_name": "福岡県"
+    },
+    {
+        "prefecture_id": 41,
+        "prefecture_name": "佐賀県"
+    },
+    {
+        "prefecture_id": 42,
+        "prefecture_name": "長崎県"
+    },
+    {
+        "prefecture_id": 43,
+        "prefecture_name": "熊本県"
+    },
+    {
+        "prefecture_id": 44,
+        "prefecture_name": "大分県"
+    },
+    {
+        "prefecture_id": 45,
+        "prefecture_name": "宮崎県"
+    },
+    {
+        "prefecture_id": 46,
+        "prefecture_name": "鹿児島県"
+    },
+    {
+        "prefecture_id": 47,
+        "prefecture_name": "沖縄県"
+    }
+]

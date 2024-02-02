@@ -1,0 +1,11 @@
+# alembicの利用マニュアル
+https://qiita.com/penpenta/items/c993243c4ceee3840f30
+
+# alembicを使用したマイグレーション
+マイグレーションファイルを更新した後
+alembic revision --autogenerate
+alembic upgrade head
+
+- 参考文献
+https://qiita.com/taito273/items/d35b08f73812c8ab9b17 -> こっちの方が詳しい
+https://zenn.dev/shimi7o/articles/39a2b62fd7b1ac
