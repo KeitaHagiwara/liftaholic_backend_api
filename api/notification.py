@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 import os, sys, datetime, time
 sys.path.append(os.pardir)
 from db.database import get_db
-from crud.crud import get_all_notifications
+from crud.crud import crud_get_all_notifications, crud_get_indiv_notifications
 
 
 router = APIRouter(
@@ -12,23 +12,39 @@ router = APIRouter(
     tags=['notification']
 )
 
-@router.get("")
-async def notification_init(db: Session=Depends(get_db)):
-    notifications = get_all_notifications(db=db)
-    if notifications is None:
+@router.get("/{uid}")
+async def notification_init(uid: str, db: Session=Depends(get_db)):
+    notifications = crud_get_all_notifications(db=db)
+    notifications_indiv = crud_get_indiv_notifications(db=db, user_id=uid)
+
+    if notifications is None or notifications_indiv is None:
         raise HTTPException(status_code=404, detail="Notifications not found")
-    result_list = []
+
+    result_dict = {'ニュース': [], 'あなた宛': []}
+    # 全体向けのお知らせ内容
     for notif in notifications:
-        print(notif.created_at)
-        result_list.append({
+        result_dict['ニュース'].append({
             "id": notif.id,
             "title": notif.title,
             "detail": notif.detail,
             "type": notif.type,
+            "animation_link": notif.animation_link,
+            "animation_width": notif.animation_width,
             "created_at": datetime.datetime.strftime(notif.created_at, '%Y-%m-%d %H:%M'),
         })
+    # あなた向けのお知らせ内容
+    for notif in notifications_indiv:
+        result_dict['あなた宛'].append({
+            "id": notif.id,
+            "title": notif.title,
+            "detail": notif.detail,
+            "type": notif.type,
+            "animation_link": notif.animation_link,
+            "animation_width": notif.animation_width,
+            "created_at": datetime.datetime.strftime(notif.created_at, '%Y-%m-%d %H:%M'),
+        })
+
     content = {
-        "result": result_list
+        "result": result_dict
     }
-    content = {"result": result_list}
     return JSONResponse(content=content)

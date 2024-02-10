@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BOOLEAN, String, INTEGER, TEXT, TIMESTAMP, VARCHAR, ForeignKey, create_engine
+from sqlalchemy import Column, BOOLEAN, String, INTEGER, TEXT, DATETIME, TIMESTAMP, VARCHAR, ForeignKey, create_engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.sql.functions import current_timestamp
@@ -74,6 +74,15 @@ class tUserTrainings(BaseModel):
     training_plan_id = Column(INTEGER, ForeignKey('t_training_plans.id'), nullable=False)
     training_no = Column(INTEGER, ForeignKey('m_trainings.training_no'), nullable=False)
 
+class tUserCalendars(BaseModel):
+    __tablename__ = 't_user_calendars'
+
+    user_id = Column(String, ForeignKey('t_users.user_id'))
+    event_name = Column(VARCHAR(100), nullable=False)
+    event_datetime = Column(TIMESTAMP, nullable=False)
+    training_plan_id = Column(INTEGER, ForeignKey('t_training_plans.id'), nullable=True)
+    calendar_comment = Column(TEXT, nullable=True)
+
 class tNotifications(BaseModel):
     __tablename__ = 't_notifications'
 
@@ -81,6 +90,8 @@ class tNotifications(BaseModel):
     title = Column(VARCHAR(255), nullable=False)
     detail = Column(TEXT, nullable=False)
     type = Column(INTEGER, nullable=False, default=0)
+    animation_link = Column(VARCHAR(255), nullable=True, default='https://lottie.host/13f1ca31-c177-4ebc-a64a-28f82a15c786/BmrjCFDPXQ.json')
+    animation_width = Column(VARCHAR(255), nullable=True)
 
 # ----------------------------------------------------
 # マスタ系
