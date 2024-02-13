@@ -9,6 +9,9 @@ from migrations.models import tUsers, tTrainingPlans, tUserTrainings, tUserCalen
 
 NOTIFICATION_TYPE = [99]
 
+# ------------------------
+# 新規ユーザー追加用のCRUD
+# ------------------------
 # サインアップで新規ユーザーを追加する
 def create_user_if_not_exists(db: Session, user_id):
     try:
@@ -32,8 +35,11 @@ def create_user_if_not_exists(db: Session, user_id):
     context = {'status_code': status_code, 'status_msg': status_msg}
     return context
 
-# ユーザーのトレーニングプランを取得する
-def crud_get_user_training_plan(db: Session, user_id):
+# ------------------------
+# プランニング画面用のCRUD
+# ------------------------
+# ユーザーの全トレーニングプランを取得する
+def crud_get_all_user_training_plan(db: Session, user_id):
     statement = text("""
                     SELECT
                         tp.id,
@@ -45,10 +51,15 @@ def crud_get_user_training_plan(db: Session, user_id):
                     ON tp.id = ut.training_plan_id
                     WHERE tp.user_id = :user_id
                     GROUP BY tp.id
+                    ORDER BY tp.created_at ASC
                     """)
 
     result = db.execute(statement, [{"user_id": user_id}])
     return result
+
+# ユーザーのトレーニングプランを取得する
+def crud_get_user_training_plan(db: Session, training_plan_id):
+    return db.get(tTrainingPlans, training_plan_id)
 
 # ユーザーのトレーニングプランに登録済みのトレーニングメニューの一覧を取得する
 def crud_get_training_plan_menu(db: Session, training_plan_id):
@@ -72,8 +83,19 @@ def crud_get_training_plan_menu(db: Session, training_plan_id):
 def crud_get_user_calendar(db: Session, user_id):
     return db.query(tUserCalendars).filter(tUserCalendars.user_id==user_id).all()
 
-# def get_user_trainings(db: Session, user_id):
-#     return db.query(models.tTrainingPlans).join(models.tUserTrainings).filter(models.tTrainingPlans.user_id == user_id).all()
+def crud_delete_user_training_menu(db: Session, user_training_id):
+    # 削除対象のメニューを検索
+    tgt_user_training = db.get(tUserTrainings, user_training_id)
+    # 指定のデータを削除
+    db.delete(tgt_user_training)
+    db.commit()
+
+def crud_delete_user_training_plan(db: Session, training_plan_id):
+    # 削除対象のプランを検索
+    tgt_training_plan = db.get(tTrainingPlans, training_plan_id)
+    # 指定のデータを削除
+    db.delete(tgt_training_plan)
+    db.commit()
 
 # 全トレーニングメニューを取得する
 def crud_get_all_trainings(db: Session):
@@ -130,6 +152,10 @@ def crud_create_training_plan(db: Session, user_id, training_title, training_des
 
     return db.get(tTrainingPlans, training_obj.id)
 
+
+# ------------------------
+# お知らせ画面用のCRUD
+# ------------------------
 # ニュースを全て取得する
 def crud_get_all_notifications(db: Session):
     return db.query(tNotifications)\

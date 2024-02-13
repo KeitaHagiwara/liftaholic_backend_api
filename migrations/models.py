@@ -71,7 +71,7 @@ class tTrainingPlans(BaseModel):
 class tUserTrainings(BaseModel):
     __tablename__ = 't_user_trainings'
 
-    training_plan_id = Column(INTEGER, ForeignKey('t_training_plans.id'), nullable=False)
+    training_plan_id = Column(INTEGER, ForeignKey('t_training_plans.id', ondelete='CASCADE'), nullable=False)
     training_no = Column(INTEGER, ForeignKey('m_trainings.training_no'), nullable=False)
 
 class tUserCalendars(BaseModel):

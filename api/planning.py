@@ -6,11 +6,11 @@ import os, sys, datetime
 sys.path.append(os.pardir)
 from db.database import get_db
 # select系
-from crud.crud import crud_get_user_training_plan, crud_get_user_calendar, crud_get_all_trainings, crud_get_training_plan_menu
+from crud.crud import crud_get_all_user_training_plan, crud_get_user_training_plan, crud_get_user_calendar, crud_get_all_trainings, crud_get_training_plan_menu
 # insert系
 from crud.crud import crud_create_training_plan, crud_add_training_menu
 # delete系
-
+from crud.crud import crud_delete_user_training_menu, crud_delete_user_training_plan
 
 router = APIRouter(
     prefix='/api/training_plan',
@@ -33,7 +33,7 @@ class TrainingMenu(BaseModel):
 @router.get("/get_user_training_plans/{uid}")
 async def planning_init(uid: str, db: Session=Depends(get_db)):
     # ユーザーのトレーニングプランを取得する
-    result_tp = crud_get_user_training_plan(db=db, user_id=uid)
+    result_tp = crud_get_all_user_training_plan(db=db, user_id=uid)
     training_plans = []
     for r in result_tp:
         training_plans.append(
@@ -90,10 +90,17 @@ async def planning_init(uid: str, db: Session=Depends(get_db)):
 
 @router.get("/get_registered_trainings/{training_plan_id}")
 async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_db)):
+    # トレーニングプランの詳細を取得する
+    result_tp = crud_get_user_training_plan(db=db, training_plan_id=training_plan_id)
+    training_plan = {
+        'training_plan_name': result_tp.training_plan_name,
+        'training_plan_description': result_tp.training_plan_description
+    }
+
     # ユーザーのトレーニングプランを取得する
-    result = crud_get_training_plan_menu(db=db, training_plan_id=training_plan_id)
+    result_ut = crud_get_training_plan_menu(db=db, training_plan_id=training_plan_id)
     user_training_menu = []
-    for r in result:
+    for r in result_ut:
         user_training_menu.append(
             {
                 "user_training_id": r.id,
@@ -103,6 +110,7 @@ async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_
         )
 
     content = {
+        'training_plan': training_plan,
         'user_training_menu': user_training_menu
     }
     return JSONResponse(content=content)
@@ -163,3 +171,34 @@ async def create_user(request: TrainingPlan, db: Session=Depends(get_db)):
     )
     print(result)
     return {'result': result}
+
+# ------------------------------------------------
+# delete系
+# ------------------------------------------------
+@router.delete("/delete_user_training_menu/{user_training_id}")
+async def delete_user_training_menu(user_training_id: int, db: Session=Depends(get_db)):
+    # DBから該当のデータを削除する
+    try:
+        crud_delete_user_training_menu(db=db, user_training_id=user_training_id)
+        status = 'Success'
+    except:
+        status = 'Failure'
+
+    content = {
+        'status': status,
+    }
+    return JSONResponse(content=content)
+
+@router.delete("/delete_training_plan/{training_plan_id}")
+async def delete_user_training_plan(training_plan_id: int, db: Session=Depends(get_db)):
+    # DBから該当のデータを削除する
+    try:
+        crud_delete_user_training_plan(db=db, training_plan_id=training_plan_id)
+        status = 'Success'
+    except:
+        status = 'Failure'
+
+    content = {
+        'status': status,
+    }
+    return JSONResponse(content=content)
