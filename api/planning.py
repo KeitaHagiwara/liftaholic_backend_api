@@ -8,7 +8,7 @@ from db.database import get_db
 # select系
 from crud.crud import crud_get_all_user_training_plan, crud_get_user_training_plan, crud_get_user_calendar, crud_get_all_trainings, crud_get_training_plan_menu
 # insert系
-from crud.crud import crud_create_training_plan, crud_add_training_menu
+from crud.crud import crud_create_training_plan, crud_add_training_menu, crud_customize_user_trainings
 # delete系
 from crud.crud import crud_delete_user_training_menu, crud_delete_user_training_plan
 
@@ -26,6 +26,12 @@ class TrainingPlan(BaseModel):
 class TrainingMenu(BaseModel):
     training_plan_id: int
     training_no: int
+
+class CustomizedTrainings(BaseModel):
+    user_training_id: int
+    sets: int
+    reps: int
+    kgs: int
 
 # ------------------------------------------------
 # select系
@@ -124,6 +130,9 @@ async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_
                     "user_training_id": r.id,
                     "training_name": r.training_name,
                     "description": r.description,
+                    "sets": r.sets,
+                    "reps": r.reps,
+                    "kgs": r.kgs,
                 }
             )
 
@@ -246,6 +255,33 @@ async def create_training_plan(request: TrainingPlan, db: Session=Depends(get_db
         "result": result,
     }
     return content
+
+# set/reps/kgを設定する
+@router.post("/customize_user_trainings", tags=["create_training_plan"])
+async def customize_user_trainings(request: CustomizedTrainings, db: Session=Depends(get_db)):
+    results = None
+    try:
+        crud_customize_user_trainings(
+            db=db,
+            user_training_id=request.user_training_id,
+            sets=request.sets,
+            reps=request.reps,
+            kgs=request.kgs,
+        )
+
+        statusCode = 200
+        statusMessage = "トレーニングメニューを更新しました。"
+
+    except Exception as e:
+        statusCode = 500
+        statusMessage = "トレーニングメニューの更新に失敗しました。"
+
+    content = {
+        "statusCode": statusCode,
+        "statusMessage": statusMessage
+    }
+    return content
+
 
 # ------------------------------------------------
 # delete系

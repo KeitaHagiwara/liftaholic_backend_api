@@ -73,6 +73,9 @@ class tUserTrainings(BaseModel):
 
     training_plan_id = Column(INTEGER, ForeignKey('t_training_plans.id', ondelete='CASCADE'), nullable=False)
     training_no = Column(INTEGER, ForeignKey('m_trainings.training_no'), nullable=False)
+    sets = Column(INTEGER, nullable=True)
+    reps = Column(INTEGER, nullable=True)
+    kgs = Column(INTEGER, nullable=True)
 
 class tUserCalendars(BaseModel):
     __tablename__ = 't_user_calendars'

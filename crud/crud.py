@@ -60,7 +60,10 @@ def crud_get_training_plan_menu(db: Session, training_plan_id):
                     ut.training_plan_id AS training_plan_id,
                     ut.training_no AS training_no,
                     tr.training_name AS training_name,
-                    tr.description AS description
+                    tr.description AS description,
+                    ut.sets AS sets,
+                    ut.reps AS reps,
+                    ut.kgs AS kgs
                 FROM t_user_trainings as ut
                 LEFT OUTER JOIN m_trainings as tr
                 ON ut.training_no = tr.training_no
@@ -139,7 +142,7 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
             SELECT
                 ut.id AS user_training_id,
                 tr.training_name AS training_name,
-                tr.description AS description
+                tr.description AS description,
             FROM t_user_trainings as ut
             LEFT OUTER JOIN m_trainings as tr
             ON ut.training_no = tr.training_no
@@ -153,6 +156,7 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
     }
     return content
 
+# トレーニングプランを新規作成する
 def crud_create_training_plan(db: Session, user_id, training_title, training_description):
     training_obj = tTrainingPlans(
         user_id = user_id,
@@ -164,6 +168,13 @@ def crud_create_training_plan(db: Session, user_id, training_title, training_des
 
     return db.get(tTrainingPlans, training_obj.id)
 
+def crud_customize_user_trainings(db: Session, user_training_id, sets, reps, kgs):
+    customized_user_training_obj = db.query(tUserTrainings).filter(tUserTrainings.id==user_training_id).first()
+    customized_user_training_obj.sets = sets
+    customized_user_training_obj.reps = reps
+    customized_user_training_obj.kgs = kgs
+    # データを確定
+    db.commit()
 
 # ------------------------
 # お知らせ画面用のCRUD
