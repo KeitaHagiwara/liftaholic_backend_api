@@ -14,26 +14,17 @@ NOTIFICATION_TYPE = [99]
 # ------------------------
 # サインアップで新規ユーザーを追加する
 def create_user_if_not_exists(db: Session, user_id):
-    try:
+    user_obj = db.query(tUsers).filter(tUsers.user_id == user_id).first()
+    # ユーザーが登録されていない場合は追加する
+    if user_obj is None:
+        user = tUsers(
+            user_id = user_id
+        )
+        db.add(user)
+        db.commit()
         user_obj = db.query(tUsers).filter(tUsers.user_id == user_id).first()
-        # ユーザーが登録されていない場合は追加する
-        if user_obj is None:
-            user = tUsers(
-                user_id = user_id
-            )
-            db.add(user)
-            db.commit()
-            user_obj = db.query(tUsers).filter(tUsers.user_id == user_id).first()
 
-        status_code = 200
-        status_msg = 'Success'
-
-    except Exception as e:
-        status_code = 500
-        status_msg = 'Error'
-
-    context = {'status_code': status_code, 'status_msg': status_msg}
-    return context
+    return user_obj
 
 # ------------------------
 # プランニング画面用のCRUD
@@ -128,10 +119,15 @@ def crud_get_all_trainings(db: Session):
 
 # ユーザーのトレーニングプランにトレーニングメニューを追加する
 def crud_add_training_menu(db: Session, training_plan_id, training_no):
-    # 既に追加されている場合は再度はしない
+
+    is_registered = True
+
     user_training_obj = db.query(tUserTrainings)\
                             .filter(tUserTrainings.training_plan_id == training_plan_id, tUserTrainings.training_no == training_no).first()
+
+    # 未登録の場合はinsertする
     if user_training_obj is None:
+        is_registered = False
         user_training_obj = tUserTrainings(
             training_plan_id = training_plan_id,
             training_no = training_no
@@ -139,7 +135,23 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
         db.add(user_training_obj)
         db.commit()
 
-    return db.get(tUserTrainings, user_training_obj.id)
+    statement = text("""
+            SELECT
+                ut.id AS user_training_id,
+                tr.training_name AS training_name,
+                tr.description AS description
+            FROM t_user_trainings as ut
+            LEFT OUTER JOIN m_trainings as tr
+            ON ut.training_no = tr.training_no
+            WHERE ut.id = :user_training_id
+            """)
+    result = db.execute(statement, [{"user_training_id": user_training_obj.id}])
+
+    content = {
+        'is_registered': is_registered,
+        'result': result
+    }
+    return content
 
 def crud_create_training_plan(db: Session, user_id, training_title, training_description):
     training_obj = tTrainingPlans(

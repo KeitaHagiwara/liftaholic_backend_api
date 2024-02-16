@@ -27,6 +27,19 @@ async def mypage_init():
 # usersを新規登録する
 @router.post("/create_user", tags=["create_user"])
 async def create_user(user:User, db: Session = Depends(get_db)):
-    result = create_user_if_not_exists(db=db, user_id=user.user_id)
-    print(result)
-    return {'result': result}
+    result = None
+    try:
+        result = create_user_if_not_exists(db=db, user_id=user.user_id)
+        statusCode = 200
+        statusMessage = "ユーザーを新規登録しました。"
+    except Exception as e:
+        statusCode = 500
+        statusMessage = "ユーザーの新規登録に失敗しました。"
+
+    content = {
+        "statusCode": statusCode,
+        "statusMessage": statusMessage,
+        "result": result
+    }
+
+    return JSONResponse(content=content)
