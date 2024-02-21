@@ -142,7 +142,7 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
             SELECT
                 ut.id AS user_training_id,
                 tr.training_name AS training_name,
-                tr.description AS description,
+                tr.description AS description
             FROM t_user_trainings as ut
             LEFT OUTER JOIN m_trainings as tr
             ON ut.training_no = tr.training_no

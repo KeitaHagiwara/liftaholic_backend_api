@@ -123,18 +123,15 @@ async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_
 
         # ユーザーのトレーニングプランを取得する
         result_ut = crud_get_training_plan_menu(db=db, training_plan_id=training_plan_id)
-        user_training_menu = []
+        user_training_menu = {}
         for r in result_ut:
-            user_training_menu.append(
-                {
-                    "user_training_id": r.id,
-                    "training_name": r.training_name,
-                    "description": r.description,
-                    "sets": r.sets,
-                    "reps": r.reps,
-                    "kgs": r.kgs,
-                }
-            )
+            user_training_menu[r.id] = {
+                "training_name": r.training_name,
+                "description": r.description,
+                "sets": r.sets,
+                "reps": r.reps,
+                "kgs": r.kgs
+            }
 
         statusCode = 200
         statusMessage = "トレーニングプランの取得に成功しました。"
@@ -198,6 +195,7 @@ async def get_all_training_menu(db: Session=Depends(get_db)):
 # トレーニングプランにメニューを追加する
 @router.post("/add_training_menu", tags=["add_training_menu"])
 async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
+    add_user_training_id = None
     add_data = {}
     try:
         add_result = crud_add_training_menu(
@@ -212,7 +210,7 @@ async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
 
         else:
             for r in add_result["result"]:
-                add_data["user_training_id"] = r.user_training_id
+                add_user_training_id = r.user_training_id,
                 add_data["training_name"] = r.training_name
                 add_data["description"] = r.description
 
@@ -226,6 +224,7 @@ async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
     content = {
         "statusCode": statusCode,
         "statusMessage": statusMessage,
+        "add_user_training_id": add_user_training_id,
         "add_data": add_data,
     }
     return content
