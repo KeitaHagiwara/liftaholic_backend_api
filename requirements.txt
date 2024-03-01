@@ -1,7 +1,10 @@
 alembic==1.13.1
-fastapi==0.109.0
+# fastapi==0.109.0
+fastapi==0.99.0
 SQLAlchemy==2.0.25
 sqlalchemy_imageattach==1.1.0
 psycopg2-binary==2.9.9
-pydantic-settings==2.1.0
+# pydantic-settings==2.1.0
 PyMySQL==1.1.0
+mangum==0.11.0
+python-dotenv==1.0.0

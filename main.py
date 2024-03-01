@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from config import settings
 from api import home, planning, workout, notification, shopping, mypage
-
+from mangum import Mangum
 
 app = FastAPI()
+
+handler = Mangum(app)
 
 # ホーム画面のAPI
 app.include_router(home.router)

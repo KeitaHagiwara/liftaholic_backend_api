@@ -77,6 +77,16 @@ class tUserTrainings(BaseModel):
     reps = Column(INTEGER, nullable=True)
     kgs = Column(INTEGER, nullable=True)
 
+class tUserTrainingAchievements(BaseModel):
+    __tablename__ = 't_user_training_achievements'
+
+    user_id = Column(TEXT, ForeignKey('t_users.user_id', ondelete='CASCADE'), nullable=False)
+    user_training_id = Column(INTEGER, ForeignKey('t_user_trainings.id'), nullable=False) # ondelete no action
+    sets_achieve = Column(INTEGER, nullable=False)
+    reps_achieve = Column(INTEGER, nullable=False)
+    kgs_achieve = Column(INTEGER, nullable=False)
+    time_elapsed = Column(INTEGER, nullable=True)
+
 class tUserCalendars(BaseModel):
     __tablename__ = 't_user_calendars'
 

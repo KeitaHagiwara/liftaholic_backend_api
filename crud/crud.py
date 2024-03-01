@@ -31,20 +31,21 @@ def create_user_if_not_exists(db: Session, user_id):
 # ------------------------
 # ユーザーの全トレーニングプランを取得する
 def crud_get_all_user_training_plan(db: Session, user_id):
-    statement = text("""
-                    SELECT
-                        tp.id,
-                        tp.training_plan_name,
-                        tp.training_plan_description,
-                        count(ut.training_plan_id) as count
-                    FROM t_training_plans as tp
-                    LEFT OUTER JOIN t_user_trainings as ut
-                    ON tp.id = ut.training_plan_id
-                    WHERE tp.user_id = :user_id
-                    GROUP BY tp.id
-                    ORDER BY tp.created_at ASC
-                    """)
-
+    statement = text(
+        """
+        SELECT
+            tp.id,
+            tp.training_plan_name,
+            tp.training_plan_description,
+            count(ut.training_plan_id) as count
+        FROM t_training_plans as tp
+        LEFT OUTER JOIN t_user_trainings as ut
+        ON tp.id = ut.training_plan_id
+        WHERE tp.user_id = :user_id
+        GROUP BY tp.id
+        ORDER BY tp.created_at ASC
+        """
+    )
     result = db.execute(statement, [{"user_id": user_id}])
     return result
 
@@ -54,22 +55,23 @@ def crud_get_user_training_plan(db: Session, training_plan_id):
 
 # ユーザーのトレーニングプランに登録済みのトレーニングメニューの一覧を取得する
 def crud_get_training_plan_menu(db: Session, training_plan_id):
-    statement = text("""
-                SELECT
-                    ut.id AS id,
-                    ut.training_plan_id AS training_plan_id,
-                    ut.training_no AS training_no,
-                    tr.training_name AS training_name,
-                    tr.description AS description,
-                    ut.sets AS sets,
-                    ut.reps AS reps,
-                    ut.kgs AS kgs
-                FROM t_user_trainings as ut
-                LEFT OUTER JOIN m_trainings as tr
-                ON ut.training_no = tr.training_no
-                WHERE ut.training_plan_id = :training_plan_id
-                """)
-
+    statement = text(
+        """
+        SELECT
+            ut.id AS id,
+            ut.training_plan_id AS training_plan_id,
+            ut.training_no AS training_no,
+            tr.training_name AS training_name,
+            tr.description AS description,
+            ut.sets AS sets,
+            ut.reps AS reps,
+            ut.kgs AS kgs
+        FROM t_user_trainings as ut
+        LEFT OUTER JOIN m_trainings as tr
+        ON ut.training_no = tr.training_no
+        WHERE ut.training_plan_id = :training_plan_id
+        """
+    )
     result = db.execute(statement, [{"training_plan_id": training_plan_id}])
     return result
 
@@ -93,29 +95,31 @@ def crud_delete_user_training_plan(db: Session, training_plan_id):
 
 # 全トレーニングメニューを取得する
 def crud_get_all_trainings(db: Session):
-    statement = text("""
-                SELECT
-                    tr.training_no AS training_no,
-                    tr.training_name AS training_name,
-                    tr.description AS description,
-                    pu.purpose_name AS purpose_name,
-                    pu.purpose_comment AS purpose_comment,
-                    pa.part_name AS part_name,
-                    pa.sub_part_name AS sub_part_name,
-                    ty.type_name AS type_name,
-                    ty.type_comment AS type_comment,
-                    ev.event_name AS event_name,
-                    ev.event_comment AS event_comment
-                FROM m_trainings as tr
-                JOIN m_purposes AS pu
-                    ON tr.purpose_no = pu.purpose_no
-                JOIN m_parts AS pa
-                    ON tr.part_no = pa.part_no
-                JOIN m_types AS ty
-                    ON tr.type_no = ty.type_no
-                JOIN m_events AS ev
-                    ON tr.event_no = ev.event_no
-                """)
+    statement = text(
+        """
+        SELECT
+            tr.training_no AS training_no,
+            tr.training_name AS training_name,
+            tr.description AS description,
+            pu.purpose_name AS purpose_name,
+            pu.purpose_comment AS purpose_comment,
+            pa.part_name AS part_name,
+            pa.sub_part_name AS sub_part_name,
+            ty.type_name AS type_name,
+            ty.type_comment AS type_comment,
+            ev.event_name AS event_name,
+            ev.event_comment AS event_comment
+        FROM m_trainings as tr
+        JOIN m_purposes AS pu
+            ON tr.purpose_no = pu.purpose_no
+        JOIN m_parts AS pa
+            ON tr.part_no = pa.part_no
+        JOIN m_types AS ty
+            ON tr.type_no = ty.type_no
+        JOIN m_events AS ev
+            ON tr.event_no = ev.event_no
+        """
+    )
     result = db.execute(statement)
     return result
     # return db.query(mTrainings).all()
@@ -138,16 +142,18 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
         db.add(user_training_obj)
         db.commit()
 
-    statement = text("""
-            SELECT
-                ut.id AS user_training_id,
-                tr.training_name AS training_name,
-                tr.description AS description
-            FROM t_user_trainings as ut
-            LEFT OUTER JOIN m_trainings as tr
-            ON ut.training_no = tr.training_no
-            WHERE ut.id = :user_training_id
-            """)
+    statement = text(
+        """
+        SELECT
+            ut.id AS user_training_id,
+            tr.training_name AS training_name,
+            tr.description AS description
+        FROM t_user_trainings as ut
+        LEFT OUTER JOIN m_trainings as tr
+        ON ut.training_no = tr.training_no
+        WHERE ut.id = :user_training_id
+        """
+    )
     result = db.execute(statement, [{"user_training_id": user_training_obj.id}])
 
     content = {
@@ -175,6 +181,29 @@ def crud_customize_user_trainings(db: Session, user_training_id, sets, reps, kgs
     customized_user_training_obj.kgs = kgs
     # データを確定
     db.commit()
+
+# ------------------------
+# ワークアウト画面用のCRUD
+# ------------------------
+def crud_get_user_training_menu(db: Session, user_training_id):
+    statement = text(
+        """
+        SELECT
+            ut.id,
+            tr.training_name,
+            tr.description,
+            ut.sets,
+            ut.reps,
+            ut.kgs
+        FROM t_user_trainings as ut
+        INNER JOIN m_trainings as tr
+        ON ut.training_no = tr.training_no
+        WHERE ut.id = :user_training_id
+        """
+    )
+
+    result = db.execute(statement, [{"user_training_id": user_training_id}])
+    return result
 
 # ------------------------
 # お知らせ画面用のCRUD
