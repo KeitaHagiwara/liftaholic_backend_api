@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BOOLEAN, String, INTEGER, TEXT, DATETIME, TIMESTAMP, VARCHAR, ForeignKey, create_engine
+from sqlalchemy import Column, BOOLEAN, String, INTEGER, FLOAT, TEXT, DATETIME, TIMESTAMP, VARCHAR, ForeignKey, create_engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.sql.functions import current_timestamp
@@ -75,7 +75,7 @@ class tUserTrainings(BaseModel):
     training_no = Column(INTEGER, ForeignKey('m_trainings.training_no'), nullable=False)
     sets = Column(INTEGER, nullable=True)
     reps = Column(INTEGER, nullable=True)
-    kgs = Column(INTEGER, nullable=True)
+    kgs = Column(FLOAT, nullable=True)
 
 class tUserTrainingAchievements(BaseModel):
     __tablename__ = 't_user_training_achievements'
@@ -84,7 +84,7 @@ class tUserTrainingAchievements(BaseModel):
     user_training_id = Column(INTEGER, ForeignKey('t_user_trainings.id'), nullable=False) # ondelete no action
     sets_achieve = Column(INTEGER, nullable=False)
     reps_achieve = Column(INTEGER, nullable=False)
-    kgs_achieve = Column(INTEGER, nullable=False)
+    kgs_achieve = Column(FLOAT, nullable=False)
     time_elapsed = Column(INTEGER, nullable=True)
 
 class tUserCalendars(BaseModel):

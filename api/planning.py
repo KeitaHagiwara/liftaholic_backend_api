@@ -31,7 +31,7 @@ class CustomizedTrainings(BaseModel):
     user_training_id: int
     sets: int
     reps: int
-    kgs: int
+    kgs: float
 
 # ------------------------------------------------
 # select系
