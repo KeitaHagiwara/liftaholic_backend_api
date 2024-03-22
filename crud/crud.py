@@ -49,30 +49,31 @@ def crud_get_all_user_training_plan(db: Session, user_id):
     result = db.execute(statement, [{"user_id": user_id}])
     return result
 
-# ユーザーのトレーニングプランを取得する
-def crud_get_user_training_plan(db: Session, training_plan_id):
-    return db.get(tTrainingPlans, training_plan_id)
-
 # ユーザーのトレーニングプランに登録済みのトレーニングメニューの一覧を取得する
-def crud_get_training_plan_menu(db: Session, training_plan_id):
+def crud_get_training_plan_menu(db: Session, uid):
     statement = text(
         """
         SELECT
-            ut.id AS id,
-            ut.training_plan_id AS training_plan_id,
+            tp.id AS training_plan_id,
+            tp.training_plan_name AS training_plan_name,
+            tp.training_plan_description AS training_plan_description,
+            ut.id AS user_training_id,
             ut.training_no AS training_no,
             tr.training_name AS training_name,
             tr.description AS description,
             ut.sets AS sets,
             ut.reps AS reps,
             ut.kgs AS kgs
-        FROM t_user_trainings as ut
-        LEFT OUTER JOIN m_trainings as tr
+        FROM t_training_plans AS tp
+        LEFT OUTER JOIN t_user_trainings AS ut
+        ON tp.id = ut.training_plan_id
+        LEFT OUTER JOIN m_trainings AS tr
         ON ut.training_no = tr.training_no
-        WHERE ut.training_plan_id = :training_plan_id
+        WHERE tp.user_id = :user_id
+        ORDER BY tp.created_at ASC;
         """
     )
-    result = db.execute(statement, [{"training_plan_id": training_plan_id}])
+    result = db.execute(statement, [{"user_id": uid}])
     return result
 
 # ユーザーのカレンダーを取得する

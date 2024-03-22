@@ -6,7 +6,7 @@ import os, sys, datetime, time
 sys.path.append(os.pardir)
 from db.database import get_db
 # select系
-from crud.crud import crud_get_all_user_training_plan, crud_get_user_training_plan, crud_get_user_calendar, crud_get_all_trainings, crud_get_training_plan_menu
+from crud.crud import crud_get_all_user_training_plan, crud_get_user_calendar, crud_get_all_trainings, crud_get_training_plan_menu
 # insert系
 from crud.crud import crud_create_training_plan, crud_add_training_menu, crud_customize_user_trainings
 # delete系
@@ -43,17 +43,35 @@ async def planning_init(uid: str, db: Session=Depends(get_db)):
 
     try:
         # ユーザーのトレーニングプランを取得する
-        result_tp = crud_get_all_user_training_plan(db=db, user_id=uid)
-        training_plans = []
-        for r in result_tp:
-            training_plans.append(
-                {
-                    "training_plan_id": r.id,
-                    "training_title": r.training_plan_name,
-                    "training_description": r.training_plan_description,
-                    "training_counts": r.count
+        result = crud_get_training_plan_menu(db=db, uid=uid)
+        user_training_menu = {}
+        for r in result:
+            if r.training_plan_id not in user_training_menu:
+                user_training_menu[r.training_plan_id] = {
+                    "training_plan_name": r.training_plan_name,
+                    "training_plan_description": r.training_plan_description,
+                    "count": 1 if r.user_training_id is not None else 0,
+                    "training_menu": {
+                        r.user_training_id: {
+                            "training_name": r.training_name,
+                            "description": r.description,
+                            "sets": r.sets,
+                            "reps": r.reps,
+                            "kgs": r.kgs
+                        }
+                    } if r.user_training_id is not None else {}
                 }
-            )
+            else:
+                user_training_menu[r.training_plan_id]["training_menu"][r.user_training_id] = {
+                    "training_name": r.training_name,
+                    "description": r.description,
+                    "sets": r.sets,
+                    "reps": r.reps,
+                    "kgs": r.kgs
+                }
+                user_training_menu[r.training_plan_id]["count"] = len(user_training_menu[r.training_plan_id]["training_menu"])
+
+
         # ユーザーのトレーニングカレンダーを取得する
         result_tc = crud_get_user_calendar(db=db, user_id=uid)
         # format
@@ -103,35 +121,44 @@ async def planning_init(uid: str, db: Session=Depends(get_db)):
     content = {
         "statusCode": statusCode,
         "statusMessage": statusMessage,
-        "training_plans": training_plans,
+        "training_plans": user_training_menu,
         "calendar_events": calendar_events
     }
     return JSONResponse(content=content)
 
-@router.get("/get_registered_trainings/{training_plan_id}")
-async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_db)):
+@router.get("/get_registered_trainings/{uid}")
+async def get_training_plan_menu(uid: str, db: Session=Depends(get_db)):
 
-    training_plan = None
     user_training_menu = None
     try:
-        # トレーニングプランの詳細を取得する
-        result_tp = crud_get_user_training_plan(db=db, training_plan_id=training_plan_id)
-        training_plan = {
-            "training_plan_name": result_tp.training_plan_name,
-            "training_plan_description": result_tp.training_plan_description
-        }
-
         # ユーザーのトレーニングプランを取得する
-        result_ut = crud_get_training_plan_menu(db=db, training_plan_id=training_plan_id)
+        result = crud_get_training_plan_menu(db=db, uid=uid)
         user_training_menu = {}
-        for r in result_ut:
-            user_training_menu[r.id] = {
-                "training_name": r.training_name,
-                "description": r.description,
-                "sets": r.sets,
-                "reps": r.reps,
-                "kgs": r.kgs
-            }
+        for r in result:
+            if r.training_plan_id not in user_training_menu:
+                user_training_menu[r.training_plan_id] = {
+                    "training_plan_name": r.training_plan_name,
+                    "training_plan_description": r.training_plan_description,
+                    "count": 1,
+                    "training_menu": {
+                        r.id: {
+                            "training_name": r.training_name,
+                            "description": r.description,
+                            "sets": r.sets,
+                            "reps": r.reps,
+                            "kgs": r.kgs
+                        }
+                    }
+                }
+            else:
+                user_training_menu[r.training_plan_id]["training_menu"][r.id] = {
+                    "training_name": r.training_name,
+                    "description": r.description,
+                    "sets": r.sets,
+                    "reps": r.reps,
+                    "kgs": r.kgs
+                }
+                user_training_menu[r.training_plan_id]["count"] = len(user_training_menu[r.training_plan_id]["training_menu"])
 
         statusCode = 200
         statusMessage = "トレーニングプランの取得に成功しました。"
@@ -143,10 +170,49 @@ async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_
     content = {
         "statusCode": statusCode,
         "statusMessage": statusMessage,
-        "training_plan": training_plan,
         "user_training_menu": user_training_menu
     }
     return JSONResponse(content=content)
+
+# @router.get("/get_registered_trainings/{training_plan_id}")
+# async def get_training_plan_menu(training_plan_id: int, db: Session=Depends(get_db)):
+
+#     training_plan = None
+#     user_training_menu = None
+#     try:
+#         # トレーニングプランの詳細を取得する
+#         result_tp = crud_get_user_training_plan(db=db, training_plan_id=training_plan_id)
+#         training_plan = {
+#             "training_plan_name": result_tp.training_plan_name,
+#             "training_plan_description": result_tp.training_plan_description
+#         }
+
+#         # ユーザーのトレーニングプランを取得する
+#         result_ut = crud_get_training_plan_menu(db=db, training_plan_id=training_plan_id)
+#         user_training_menu = {}
+#         for r in result_ut:
+#             user_training_menu[r.id] = {
+#                 "training_name": r.training_name,
+#                 "description": r.description,
+#                 "sets": r.sets,
+#                 "reps": r.reps,
+#                 "kgs": r.kgs
+#             }
+
+#         statusCode = 200
+#         statusMessage = "トレーニングプランの取得に成功しました。"
+
+#     except Exception as e:
+#         statusCode = 500
+#         statusMessage = "トレーニングプランの取得に失敗しました。"
+
+#     content = {
+#         "statusCode": statusCode,
+#         "statusMessage": statusMessage,
+#         "training_plan": training_plan,
+#         "user_training_menu": user_training_menu
+#     }
+#     return JSONResponse(content=content)
 
 @router.get("/get_all_training_menu")
 async def get_all_training_menu(db: Session=Depends(get_db)):
@@ -213,6 +279,9 @@ async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
                 add_user_training_id = r.user_training_id,
                 add_data["training_name"] = r.training_name
                 add_data["description"] = r.description
+                add_data["sets"] = 1
+                add_data["reps"] = 1
+                add_data["kgs"] = 0.25
 
             statusCode = 200
             statusMessage = r.training_name + "をトレーニングメニューを追加しました。"

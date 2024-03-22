@@ -29,8 +29,8 @@ async def get_user_training_menu(user_training_id: str, db: Session=Depends(get_
             training_name = r.training_name
             description = r.description
             sets = r.sets
-            reps = r.reps if r.reps is not None else 0
-            kgs = r.kgs if r.kgs is not None else 0.0
+            reps = r.reps if r.reps is not None else 1
+            kgs = r.kgs if r.kgs is not None else 0.25
             training = {
                 'training_name': training_name,
                 'description': description,
