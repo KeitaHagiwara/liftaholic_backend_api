@@ -50,7 +50,7 @@ def crud_get_all_user_training_plan(db: Session, user_id):
     return result
 
 # ユーザーのトレーニングプランに登録済みのトレーニングメニューの一覧を取得する
-def crud_get_training_plan_menu(db: Session, uid):
+def crud_get_user_training_data(db: Session, uid):
     statement = text(
         """
         SELECT
@@ -180,6 +180,13 @@ def crud_customize_user_trainings(db: Session, user_training_id, sets, reps, kgs
     customized_user_training_obj.sets = sets
     customized_user_training_obj.reps = reps
     customized_user_training_obj.kgs = kgs
+    # データを確定
+    db.commit()
+
+def crud_update_training_plan(db: Session, user_id, training_plan_id, training_title, training_description):
+    training_plan_obj = db.query(tTrainingPlans).filter(tTrainingPlans.user_id==user_id, tTrainingPlans.id==training_plan_id).first()
+    training_plan_obj.training_plan_name = training_title
+    training_plan_obj.training_plan_description = training_description
     # データを確定
     db.commit()
 
