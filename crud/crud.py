@@ -61,14 +61,25 @@ def crud_get_user_training_data(db: Session, uid):
             ut.training_no AS training_no,
             tr.training_name AS training_name,
             tr.description AS description,
+            pt.part_name AS part_name,
+            pt.part_image_file AS part_image_file,
+            ev.event_name AS event_name,
+            ty.type_name AS type_name,
             ut.sets AS sets,
             ut.reps AS reps,
-            ut.kgs AS kgs
+            ut.kgs AS kgs,
+            ut.interval AS interval
         FROM t_training_plans AS tp
         LEFT OUTER JOIN t_user_trainings AS ut
-        ON tp.id = ut.training_plan_id
+            ON tp.id = ut.training_plan_id
         LEFT OUTER JOIN m_trainings AS tr
-        ON ut.training_no = tr.training_no
+            ON ut.training_no = tr.training_no
+        LEFT OUTER JOIN m_parts AS pt
+            ON tr.part_no = pt.part_no
+        LEFT OUTER JOIN m_types AS ty
+            ON tr.type_no = ty.type_no
+        LEFT OUTER JOIN m_events AS ev
+            ON tr.event_no = ev.event_no
         WHERE tp.user_id = :user_id
         ORDER BY tp.created_at ASC;
         """
@@ -80,19 +91,22 @@ def crud_get_user_training_data(db: Session, uid):
 def crud_get_user_calendar(db: Session, user_id):
     return db.query(tUserCalendars).filter(tUserCalendars.user_id==user_id).all()
 
-def crud_delete_user_training_menu(db: Session, user_training_id):
-    # 削除対象のメニューを検索
-    tgt_user_training = db.get(tUserTrainings, user_training_id)
+# ユーザーのトレーニングプランを削除する
+def crud_delete_user_training_plan(db: Session, user_id, training_plan_id):
+    # 削除対象のプランを検索
+    delete_training_plan_obj = db.query(tTrainingPlans).filter(tTrainingPlans.user_id==user_id, tTrainingPlans.id==training_plan_id).first()
     # 指定のデータを削除
-    db.delete(tgt_user_training)
+    db.delete(delete_training_plan_obj)
     db.commit()
 
-def crud_delete_user_training_plan(db: Session, training_plan_id):
-    # 削除対象のプランを検索
-    tgt_training_plan = db.get(tTrainingPlans, training_plan_id)
+# ユーザーのトレーニングメニューを削除する
+def crud_delete_user_training_menu(db: Session, user_id, user_training_id):
+    # 削除対象のメニューを検索
+    delete_training_menu_obj = db.query(tUserTrainings).join(tTrainingPlans).filter(tTrainingPlans.user_id==user_id, tUserTrainings.id==user_training_id).first()
     # 指定のデータを削除
-    db.delete(tgt_training_plan)
+    db.delete(delete_training_menu_obj)
     db.commit()
+
 
 # 全トレーニングメニューを取得する
 def crud_get_all_trainings(db: Session):
@@ -106,6 +120,7 @@ def crud_get_all_trainings(db: Session):
             pu.purpose_comment AS purpose_comment,
             pa.part_name AS part_name,
             pa.sub_part_name AS sub_part_name,
+            pa.part_image_file AS part_image_file,
             ty.type_name AS type_name,
             ty.type_comment AS type_comment,
             ev.event_name AS event_name,
@@ -148,10 +163,13 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
         SELECT
             ut.id AS user_training_id,
             tr.training_name AS training_name,
-            tr.description AS description
-        FROM t_user_trainings as ut
-        LEFT OUTER JOIN m_trainings as tr
+            tr.description AS description,
+            pt.part_image_file AS part_image_file
+        FROM t_user_trainings AS ut
+        LEFT OUTER JOIN m_trainings AS tr
         ON ut.training_no = tr.training_no
+        LEFT OUTER JOIN m_parts AS pt
+        ON tr.part_no = pt.part_no
         WHERE ut.id = :user_training_id
         """
     )
@@ -175,18 +193,19 @@ def crud_create_training_plan(db: Session, user_id, training_title, training_des
 
     return db.get(tTrainingPlans, training_obj.id)
 
-def crud_customize_user_trainings(db: Session, user_training_id, sets, reps, kgs):
-    customized_user_training_obj = db.query(tUserTrainings).filter(tUserTrainings.id==user_training_id).first()
-    customized_user_training_obj.sets = sets
-    customized_user_training_obj.reps = reps
-    customized_user_training_obj.kgs = kgs
-    # データを確定
-    db.commit()
-
 def crud_update_training_plan(db: Session, user_id, training_plan_id, training_title, training_description):
     training_plan_obj = db.query(tTrainingPlans).filter(tTrainingPlans.user_id==user_id, tTrainingPlans.id==training_plan_id).first()
     training_plan_obj.training_plan_name = training_title
     training_plan_obj.training_plan_description = training_description
+    # データを確定
+    db.commit()
+
+def crud_update_training_set(db: Session, user_id, user_training_id, sets, reps, kgs, interval):
+    training_set_obj = db.query(tUserTrainings).join(tTrainingPlans).filter(tTrainingPlans.user_id==user_id, tUserTrainings.id==user_training_id).first()
+    training_set_obj.sets = sets
+    training_set_obj.reps = reps
+    training_set_obj.kgs = kgs
+    training_set_obj.interval = interval
     # データを確定
     db.commit()
 

@@ -76,6 +76,7 @@ class tUserTrainings(BaseModel):
     sets = Column(INTEGER, nullable=True)
     reps = Column(INTEGER, nullable=True)
     kgs = Column(FLOAT, nullable=True)
+    interval = Column(VARCHAR(5), nullable=True)
 
 class tUserTrainingAchievements(BaseModel):
     __tablename__ = 't_user_training_achievements'
@@ -85,6 +86,7 @@ class tUserTrainingAchievements(BaseModel):
     sets_achieve = Column(INTEGER, nullable=False)
     reps_achieve = Column(INTEGER, nullable=False)
     kgs_achieve = Column(FLOAT, nullable=False)
+    interval_achieve = Column(VARCHAR(5), nullable=True)
     time_elapsed = Column(INTEGER, nullable=True)
 
 class tUserCalendars(BaseModel):
@@ -148,6 +150,7 @@ class mParts(Base):
     part_name = Column(VARCHAR(100), nullable=False)
     sub_part_name = Column(VARCHAR(100), nullable=False)
     part_comment = Column(VARCHAR(100), nullable=True)
+    part_image_file = Column(VARCHAR(255), nullable=True)
 
 class mTypes(Base):
     # タイプ

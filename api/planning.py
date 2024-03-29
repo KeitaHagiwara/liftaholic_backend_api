@@ -8,7 +8,7 @@ from db.database import get_db
 # select系
 from crud.crud import crud_get_user_training_data, crud_get_user_calendar, crud_get_all_trainings
 # insert系
-from crud.crud import crud_create_training_plan, crud_add_training_menu, crud_customize_user_trainings
+from crud.crud import crud_create_training_plan, crud_add_training_menu
 # delete系
 from crud.crud import crud_delete_user_training_menu, crud_delete_user_training_plan
 
@@ -24,14 +24,9 @@ class TrainingPlan(BaseModel):
     training_description: str
 
 class TrainingMenu(BaseModel):
+    user_id: str
     training_plan_id: int
     training_no: int
-
-class CustomizedTrainings(BaseModel):
-    user_training_id: int
-    sets: int
-    reps: int
-    kgs: float
 
 # ------------------------------------------------
 # select系
@@ -130,7 +125,7 @@ async def planning_init(uid: str, db: Session=Depends(get_db)):
 # insert系
 # ------------------------------------------------
 # トレーニングプランにメニューを追加する
-@router.post("/add_training_menu", tags=["add_training_menu"])
+@router.post("/add_training_menu")
 async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
     add_user_training_id = None
     add_data = {}
@@ -150,10 +145,13 @@ async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
                 add_user_training_id = r.user_training_id,
                 add_data["training_name"] = r.training_name
                 add_data["description"] = r.description
+                add_data["part_image_file"] = r.part_image_file
                 add_data["sets"] = 1
                 add_data["reps"] = 1
                 add_data["kgs"] = 0.25
+                add_data["interval"] = "01:00"
 
+            print(add_data)
             statusCode = 200
             statusMessage = r.training_name + "をトレーニングメニューを追加しました。"
 
@@ -195,33 +193,6 @@ async def create_training_plan(request: TrainingPlan, db: Session=Depends(get_db
     }
     return content
 
-# set/reps/kgを設定する
-@router.post("/customize_user_trainings", tags=["create_training_plan"])
-async def customize_user_trainings(request: CustomizedTrainings, db: Session=Depends(get_db)):
-    results = None
-    try:
-        crud_customize_user_trainings(
-            db=db,
-            user_training_id=request.user_training_id,
-            sets=request.sets,
-            reps=request.reps,
-            kgs=request.kgs,
-        )
-
-        statusCode = 200
-        statusMessage = "トレーニングメニューを更新しました。"
-
-    except Exception as e:
-        statusCode = 500
-        statusMessage = "トレーニングメニューの更新に失敗しました。"
-
-    content = {
-        "statusCode": statusCode,
-        "statusMessage": statusMessage
-    }
-    return content
-
-
 # ------------------------------------------------
 # delete系
 # ------------------------------------------------
@@ -239,26 +210,5 @@ async def delete_user_training_menu(user_training_id: int, db: Session=Depends(g
     content = {
         "statusCode": statusCode,
         "statusMessage": statusMessage
-    }
-    return JSONResponse(content=content)
-
-@router.delete("/delete_training_plan/{training_plan_id}")
-async def delete_user_training_plan(training_plan_id: int, db: Session=Depends(get_db)):
-    # DBから該当のデータを削除する
-    try:
-        crud_delete_user_training_plan(db=db, training_plan_id=training_plan_id)
-
-        statusCode = 200
-        statusMessage = "トレーニングプランを削除しました。"
-
-    except Exception as e:
-
-        statusCode = 500
-        statusMessage = "トレーニングプランの削除に失敗しました。"
-
-    content = {
-        "statusCode": statusCode,
-        "statusMessage": statusMessage,
-        "deleted_id": training_plan_id
     }
     return JSONResponse(content=content)
