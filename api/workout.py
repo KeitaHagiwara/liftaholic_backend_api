@@ -11,7 +11,7 @@ from crud.crud import crud_get_user_training_data, crud_get_all_trainings
 # insert系
 # from crud.crud import
 # update系
-from crud.crud import crud_update_training_plan, crud_update_training_set
+from crud.crud import crud_update_training_plan, crud_upsert_training_menus, crud_update_training_set
 # delete系
 from crud.crud import crud_delete_user_training_plan, crud_delete_user_training_menu
 
@@ -25,6 +25,11 @@ class UpdateTrainingPlan(BaseModel):
     training_plan_id: str
     training_title: str
     training_description: str
+
+class UpdateTrainingMenu(BaseModel):
+    user_id: str
+    training_plan_id: str
+    training_master: object
 
 class UpdateTrainingSet(BaseModel):
     user_id: str
@@ -40,50 +45,10 @@ class UpdateTrainingSet(BaseModel):
 # ----------------------------------------
 @router.get("/get_user_training_data/{uid}")
 async def workout_init(uid: str, db: Session=Depends(get_db)):
-    training_plans = []
 
     try:
-        # ユーザーのトレーニングプランを取得する
-        result = crud_get_user_training_data(db=db, uid=uid)
-        user_training_menu = {}
-        for r in result:
-            if r.training_plan_id not in user_training_menu:
-                user_training_menu[r.training_plan_id] = {
-                    "training_plan_name": r.training_plan_name,
-                    "training_plan_description": r.training_plan_description,
-                    "count": 1 if r.user_training_id is not None else 0,
-                    "training_menu": {
-                        r.user_training_id: {
-                            "training_name": r.training_name,
-                            "description": r.description,
-                            "part_name": r.part_name,
-                            "part_image_file": r.part_image_file,
-                            "type_name": r.type_name,
-                            "event_name": r.event_name,
-                            "sets": r.sets if r.sets is not None else 1,
-                            "reps": r.reps if r.reps is not None else 1,
-                            "kgs": r.kgs if r.kgs is not None else 0.25,
-                            "interval": r.interval if r.interval is not None else "01:00",
-                        }
-                    } if r.user_training_id is not None else {}
-                }
-            else:
-                user_training_menu[r.training_plan_id]["training_menu"][r.user_training_id] = {
-                    "training_name": r.training_name,
-                    "description": r.description,
-                    "part_name": r.part_name,
-                    "part_image_file": r.part_image_file,
-                    "type_name": r.type_name,
-                    "event_name": r.event_name,
-                    "sets": r.sets if r.sets is not None else 1,
-                    "reps": r.reps if r.reps is not None else 1,
-                    "kgs": r.kgs if r.kgs is not None else 0.25,
-                    "interval": r.interval if r.interval is not None else "01:00",
-                }
-                user_training_menu[r.training_plan_id]["count"] = len(user_training_menu[r.training_plan_id]["training_menu"])
-
-            print(user_training_menu)
-
+        # ユーザーのトレーニングデータを取得する
+        user_training_menu = get_user_training_data(db, uid)
         statusCode = 200
         statusMessage = "ユーザーのトレーニングデータを取得しました。"
 
@@ -99,6 +64,49 @@ async def workout_init(uid: str, db: Session=Depends(get_db)):
     }
     return JSONResponse(content=content)
 
+def get_user_training_data(db, uid):
+    # ユーザーのトレーニングプランを取得する
+    result = crud_get_user_training_data(db=db, uid=uid)
+    user_training_menu = {}
+    for r in result:
+        if r.training_plan_id not in user_training_menu:
+            user_training_menu[r.training_plan_id] = {
+                "training_plan_name": r.training_plan_name,
+                "training_plan_description": r.training_plan_description,
+                "count": 1 if r.user_training_id is not None else 0,
+                "training_menu": {
+                    r.user_training_id: {
+                        "training_name": r.training_name,
+                        "description": r.description,
+                        "part_name": r.part_name,
+                        "part_image_file": r.part_image_file,
+                        "type_name": r.type_name,
+                        "event_name": r.event_name,
+                        "sets": r.sets if r.sets is not None else 1,
+                        "reps": r.reps if r.reps is not None else 1,
+                        "kgs": r.kgs if r.kgs is not None else 0.25,
+                        "interval": r.interval if r.interval is not None else "01:00",
+                    }
+                } if r.user_training_id is not None else {}
+            }
+        else:
+            user_training_menu[r.training_plan_id]["training_menu"][r.user_training_id] = {
+                "training_name": r.training_name,
+                "description": r.description,
+                "part_name": r.part_name,
+                "part_image_file": r.part_image_file,
+                "type_name": r.type_name,
+                "event_name": r.event_name,
+                "sets": r.sets if r.sets is not None else 1,
+                "reps": r.reps if r.reps is not None else 1,
+                "kgs": r.kgs if r.kgs is not None else 0.25,
+                "interval": r.interval if r.interval is not None else "01:00",
+            }
+            user_training_menu[r.training_plan_id]["count"] = len(user_training_menu[r.training_plan_id]["training_menu"])
+
+    return user_training_menu
+
+
 # ----------------------------------------
 # 全トレーニングメニューのマスタを取得する
 # ----------------------------------------
@@ -111,6 +119,7 @@ async def get_all_training_menu_master(db: Session=Depends(get_db)):
             training_no = r.training_no
             parts = r.part_name
             elm_dic = {
+                "is_selected": False,
                 "training_name": r.training_name,
                 "description": r.description,
                 "purpose_name": r.purpose_name,
@@ -167,6 +176,33 @@ async def customize_training_plan(request: UpdateTrainingPlan, db: Session=Depen
     content = {
         "statusCode": statusCode,
         "statusMessage": statusMessage
+    }
+    return content
+
+# ----------------------------------------
+# トレーニングメニューを更新する
+# ----------------------------------------
+@router.post("/update_training_menu")
+async def update_training_menu(request: UpdateTrainingMenu, db: Session=Depends(get_db)):
+
+    user_id = request.user_id
+    training_plan_id = request.training_plan_id,
+    training_menu = request.training_master
+
+    try:
+        crud_upsert_training_menus(db, user_id, training_plan_id, training_menu)
+        user_training_data = get_user_training_data(db, user_id)
+        statusCode = 200
+        statusMessage = "トレーニングメニューを更新しました。"
+
+    except Exception as e:
+        statusCode = 500
+        statusMessage = "トレーニングメニューの追加に失敗しました。"
+
+    content = {
+        "statusCode": statusCode,
+        "statusMessage": statusMessage,
+        "user_training_data": user_training_data,
     }
     return content
 

@@ -181,6 +181,28 @@ def crud_add_training_menu(db: Session, training_plan_id, training_no):
     }
     return content
 
+def crud_upsert_training_menus(db: Session, user_id, training_plan_id, training_menu):
+    for parts_val in training_menu.values():
+        for training_no, training_master_val in parts_val.items():
+            training_name = training_master_val['training_name']
+            is_selected = training_master_val['is_selected']
+
+            user_training_obj = db.query(tUserTrainings).join(tTrainingPlans).join(mTrainings).filter(tTrainingPlans.user_id==user_id, tUserTrainings.training_plan_id==training_plan_id, mTrainings.training_name==training_name).first()
+            # DBに登録がなく、ユーザーに選択されている場合は新規登録
+            if (user_training_obj is None and is_selected):
+                user_training_obj = tUserTrainings(
+                    training_plan_id = training_plan_id,
+                    training_no = training_no
+                )
+                db.add(user_training_obj)
+
+            # DBに登録済みで、ユーザーに選択されていない場合は削除
+            elif(user_training_obj is not None and not is_selected):
+                db.delete(user_training_obj)
+    db.commit()
+
+
+
 # トレーニングプランを新規作成する
 def crud_create_training_plan(db: Session, user_id, training_title, training_description):
     training_obj = tTrainingPlans(
