@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 import os, sys
 
 sys.path.append(os.pardir)
-from migrations.models import tUsers, tTrainingPlans, tUserTrainings, tUserCalendars, tNotifications, mTrainings
+from migrations.models import tUsers, tTrainingPlans, tUserTrainings, tUserTrainingAchievements, tUserCalendars, tNotifications, mTrainings
 
 NOTIFICATION_TYPE = [99]
 
@@ -140,47 +140,6 @@ def crud_get_all_trainings(db: Session):
     return result
     # return db.query(mTrainings).all()
 
-# ユーザーのトレーニングプランにトレーニングメニューを追加する
-def crud_add_training_menu(db: Session, training_plan_id, training_no):
-
-    is_registered = True
-
-    user_training_obj = db.query(tUserTrainings)\
-                            .filter(tUserTrainings.training_plan_id == training_plan_id, tUserTrainings.training_no == training_no).first()
-
-    # 未登録の場合はinsertする
-    if user_training_obj is None:
-        is_registered = False
-        user_training_obj = tUserTrainings(
-            training_plan_id = training_plan_id,
-            training_no = training_no
-        )
-        db.add(user_training_obj)
-        db.commit()
-
-    statement = text(
-        """
-        SELECT
-            ut.id AS user_training_id,
-            tr.training_name AS training_name,
-            tr.description AS description,
-            pt.part_image_file AS part_image_file
-        FROM t_user_trainings AS ut
-        LEFT OUTER JOIN m_trainings AS tr
-        ON ut.training_no = tr.training_no
-        LEFT OUTER JOIN m_parts AS pt
-        ON tr.part_no = pt.part_no
-        WHERE ut.id = :user_training_id
-        """
-    )
-    result = db.execute(statement, [{"user_training_id": user_training_obj.id}])
-
-    content = {
-        'is_registered': is_registered,
-        'result': result
-    }
-    return content
-
 def crud_upsert_training_menus(db: Session, user_id, training_plan_id, training_menu):
     for parts_val in training_menu.values():
         for training_no, training_master_val in parts_val.items():
@@ -200,8 +159,6 @@ def crud_upsert_training_menus(db: Session, user_id, training_plan_id, training_
             elif(user_training_obj is not None and not is_selected):
                 db.delete(user_training_obj)
     db.commit()
-
-
 
 # トレーニングプランを新規作成する
 def crud_create_training_plan(db: Session, user_id, training_title, training_description):
@@ -253,6 +210,23 @@ def crud_get_user_training_menu(db: Session, user_training_id):
 
     result = db.execute(statement, [{"user_training_id": user_training_id}])
     return result
+
+def crud_insert_training_set_achieved(db:Session, user_id, training_plan_id, set_achieved):
+
+    for elm in set_achieved:
+        # トレーニング名からtraining_noを取得する
+        training_name = elm['training_name']
+        training_no = db.query(mTrainings).filter(mTrainings.training_name==training_name).first().training_no
+        achieved_obj = tUserTrainingAchievements(
+            user_id = user_id,
+            training_plan_id = training_plan_id,
+            training_no = training_no,
+            reps_achieve = elm['reps'],
+            kgs_achieve = elm['kgs'],
+            time_elapsed = elm['time']
+        )
+        db.add(achieved_obj)
+    db.commit()
 
 # ------------------------
 # お知らせ画面用のCRUD

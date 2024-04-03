@@ -8,7 +8,7 @@ from db.database import get_db
 # select系
 from crud.crud import crud_get_user_training_data, crud_get_user_calendar, crud_get_all_trainings
 # insert系
-from crud.crud import crud_create_training_plan, crud_add_training_menu
+from crud.crud import crud_create_training_plan
 # delete系
 from crud.crud import crud_delete_user_training_menu, crud_delete_user_training_plan
 
@@ -124,48 +124,6 @@ async def planning_init(uid: str, db: Session=Depends(get_db)):
 # ------------------------------------------------
 # insert系
 # ------------------------------------------------
-# トレーニングプランにメニューを追加する
-@router.post("/add_training_menu")
-async def add_training_menu(request: TrainingMenu, db: Session=Depends(get_db)):
-    add_user_training_id = None
-    add_data = {}
-    try:
-        add_result = crud_add_training_menu(
-            db=db,
-            training_plan_id=request.training_plan_id,
-            training_no=request.training_no
-        )
-
-        if (add_result["is_registered"]):
-            statusCode = 409
-            statusMessage = "該当のメニューは既にプランに登録済みです。"
-
-        else:
-            for r in add_result["result"]:
-                add_user_training_id = r.user_training_id,
-                add_data["training_name"] = r.training_name
-                add_data["description"] = r.description
-                add_data["part_image_file"] = r.part_image_file
-                add_data["sets"] = 1
-                add_data["reps"] = 1
-                add_data["kgs"] = 0.25
-                add_data["interval"] = "01:00"
-
-            print(add_data)
-            statusCode = 200
-            statusMessage = r.training_name + "をトレーニングメニューを追加しました。"
-
-    except Exception as e:
-        statusCode = 500
-        statusMessage = "トレーニングメニューの追加に失敗しました。"
-
-    content = {
-        "statusCode": statusCode,
-        "statusMessage": statusMessage,
-        "add_user_training_id": add_user_training_id,
-        "add_data": add_data,
-    }
-    return content
 
 # トレーニングプランを新規作成する
 @router.post("/create_training_plan", tags=["create_training_plan"])

@@ -82,12 +82,11 @@ class tUserTrainingAchievements(BaseModel):
     __tablename__ = 't_user_training_achievements'
 
     user_id = Column(TEXT, ForeignKey('t_users.user_id', ondelete='CASCADE'), nullable=False)
-    user_training_id = Column(INTEGER, ForeignKey('t_user_trainings.id'), nullable=False) # ondelete no action
-    sets_achieve = Column(INTEGER, nullable=False)
+    training_plan_id = Column(INTEGER, ForeignKey('t_training_plans.id'), nullable=False)
+    training_no = Column(INTEGER, ForeignKey('m_trainings.training_no'), nullable=False)
     reps_achieve = Column(INTEGER, nullable=False)
     kgs_achieve = Column(FLOAT, nullable=False)
-    interval_achieve = Column(VARCHAR(5), nullable=True)
-    time_elapsed = Column(INTEGER, nullable=True)
+    time_elapsed = Column(VARCHAR(5), nullable=False)
 
 class tUserCalendars(BaseModel):
     __tablename__ = 't_user_calendars'

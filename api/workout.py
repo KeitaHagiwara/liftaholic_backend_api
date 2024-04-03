@@ -9,7 +9,7 @@ from db.database import get_db
 # select系
 from crud.crud import crud_get_user_training_data, crud_get_all_trainings
 # insert系
-# from crud.crud import
+from crud.crud import crud_insert_training_set_achieved
 # update系
 from crud.crud import crud_update_training_plan, crud_upsert_training_menus, crud_update_training_set
 # delete系
@@ -39,6 +39,10 @@ class UpdateTrainingSet(BaseModel):
     kgs: float
     interval: str
 
+class AchievedTrainingSet(BaseModel):
+    user_id: str
+    training_plan_id: str
+    training_set_achieved: object
 
 # ----------------------------------------
 # ユーザーのトレーニングデータを取得する
@@ -82,7 +86,7 @@ def get_user_training_data(db, uid):
                         "part_image_file": r.part_image_file,
                         "type_name": r.type_name,
                         "event_name": r.event_name,
-                        "sets": r.sets if r.sets is not None else 1,
+                        "sets": r.sets if r.sets is not None else 3,
                         "reps": r.reps if r.reps is not None else 1,
                         "kgs": r.kgs if r.kgs is not None else 0.25,
                         "interval": r.interval if r.interval is not None else "01:00",
@@ -97,7 +101,7 @@ def get_user_training_data(db, uid):
                 "part_image_file": r.part_image_file,
                 "type_name": r.type_name,
                 "event_name": r.event_name,
-                "sets": r.sets if r.sets is not None else 1,
+                "sets": r.sets if r.sets is not None else 3,
                 "reps": r.reps if r.reps is not None else 1,
                 "kgs": r.kgs if r.kgs is not None else 0.25,
                 "interval": r.interval if r.interval is not None else "01:00",
@@ -280,3 +284,37 @@ async def delete_user_training_menu(user_id: str, user_training_id: int, db: Ses
         "statusMessage": statusMessage
     }
     return JSONResponse(content=content)
+
+# ----------------------------------------
+# ワークアウト完了時に実績をDBに保存する
+# ----------------------------------------
+@router.post("/complete_workout")
+async def complete_workout(request: AchievedTrainingSet, db: Session=Depends(get_db)):
+    user_id = request.user_id
+    training_plan_id = request.training_plan_id
+    set_achieved = request.training_set_achieved
+
+    print(user_id)
+    print(training_plan_id)
+    print(set_achieved)
+
+    try:
+        crud_insert_training_set_achieved(
+            db=db,
+            user_id=user_id,
+            training_plan_id=training_plan_id,
+            set_achieved=set_achieved
+        )
+        statusCode = 200
+        statusMessage = "ワークアウトが完了しました。\nお疲れ様でした！"
+
+
+    except Exception as e:
+        statusCode = 500
+        statusMessage = "ワークアウト実績の登録に失敗しました。"
+
+    content = {
+        "statusCode": statusCode,
+        "statusMessage": statusMessage
+    }
+    return content
