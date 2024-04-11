@@ -6,11 +6,11 @@ import os, sys, datetime, time
 sys.path.append(os.pardir)
 from db.database import get_db
 # select系
-from crud.crud import crud_get_user_training_data, crud_get_user_calendar, crud_get_all_trainings
+from crud.crud import crud_get_user_training_data, crud_get_user_calendar
 # insert系
 from crud.crud import crud_create_training_plan
 # delete系
-from crud.crud import crud_delete_user_training_menu, crud_delete_user_training_plan
+# from crud.crud import
 
 router = APIRouter(
     prefix="/api/training_plan",
@@ -154,19 +154,4 @@ async def create_training_plan(request: TrainingPlan, db: Session=Depends(get_db
 # ------------------------------------------------
 # delete系
 # ------------------------------------------------
-@router.delete("/delete_user_training_menu/{user_training_id}")
-async def delete_user_training_menu(user_training_id: int, db: Session=Depends(get_db)):
-    # DBから該当のデータを削除する
-    try:
-        crud_delete_user_training_menu(db=db, user_training_id=user_training_id)
-        statusCode = 200
-        statusMessage = "トレーニングメニューを削除しました。"
-    except Exception as e:
-        statusCode = 500
-        statusMessage = "トレーニングメニューの削除に失敗しました。"
 
-    content = {
-        "statusCode": statusCode,
-        "statusMessage": statusMessage
-    }
-    return JSONResponse(content=content)
