@@ -104,8 +104,7 @@ class tNotifications(BaseModel):
     title = Column(VARCHAR(255), nullable=False)
     detail = Column(TEXT, nullable=False)
     type = Column(INTEGER, nullable=False, default=0)
-    animation_link = Column(VARCHAR(255), nullable=True, default='https://lottie.host/13f1ca31-c177-4ebc-a64a-28f82a15c786/BmrjCFDPXQ.json')
-    animation_width = Column(VARCHAR(255), nullable=True)
+    is_read = Column(BOOLEAN, nullable=True, default=False)
 
 # ----------------------------------------------------
 # マスタ系

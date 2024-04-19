@@ -1,17 +1,28 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import os, sys, datetime, time
 sys.path.append(os.pardir)
 from db.database import get_db
-from crud.crud import crud_get_all_notifications, crud_get_indiv_notifications
-
+# select系
+from crud.crud import crud_get_all_notifications, crud_get_indiv_notifications, crud_get_unread_notifications_count
+# update系
+from crud.crud import crud_update_unread_check
 
 router = APIRouter(
     prefix='/api/notification',
     tags=['notification']
 )
 
+class UpdateUnreadCheck(BaseModel):
+    user_id: str
+    notification_id: int
+
+
+# ----------------------------------------
+# ユーザーのお知らせを取得する
+# ----------------------------------------
 @router.get("/{uid}")
 async def notification_init(uid: str, db: Session=Depends(get_db)):
     result_dict = {}
@@ -30,8 +41,6 @@ async def notification_init(uid: str, db: Session=Depends(get_db)):
                 "title": notif.title,
                 "detail": notif.detail,
                 "type": notif.type,
-                "animation_link": notif.animation_link,
-                "animation_width": notif.animation_width,
                 "created_at": datetime.datetime.strftime(notif.created_at, '%Y-%m-%d %H:%M'),
             })
         # あなた向けのお知らせ内容
@@ -41,10 +50,11 @@ async def notification_init(uid: str, db: Session=Depends(get_db)):
                 "title": notif.title,
                 "detail": notif.detail,
                 "type": notif.type,
-                "animation_link": notif.animation_link,
-                "animation_width": notif.animation_width,
                 "created_at": datetime.datetime.strftime(notif.created_at, '%Y-%m-%d %H:%M'),
             })
+
+        # 未読のお知らせの件数を取得する
+        unread_count = crud_get_unread_notifications_count(db=db, user_id=uid)
 
         statusCode = 200
         statusMessage = "お知らせ情報を取得しました。"
@@ -57,6 +67,36 @@ async def notification_init(uid: str, db: Session=Depends(get_db)):
     content = {
         "statusCode": statusCode,
         "statusMessage": statusMessage,
-        "result": result_dict
+        "result": result_dict,
+        "unreadCount": unread_count
     }
+    print(content)
     return JSONResponse(content=content)
+
+# ----------------------------------------
+# ユーザーの未読メッセージを既読に変更する
+# ----------------------------------------
+@router.post("/message_read_check")
+async def message_read_check(request: UpdateUnreadCheck, db: Session=Depends(get_db)):
+    results = None
+    try:
+        uid = request.user_id
+        crud_update_unread_check(
+            db=db,
+            user_id=uid,
+            notification_id=request.notification_id
+        )
+
+        statusCode = 200
+        statusMessage = "お知らせメッセージを確認しました。"
+
+    except Exception as e:
+        statusCode = 500
+        statusMessage = "お知らせメッセージの確認に失敗しました。"
+
+    content = {
+        "statusCode": statusCode,
+        "statusMessage": statusMessage,
+        "unreadCount": crud_get_unread_notifications_count(db=db, user_id=uid)
+    }
+    return content

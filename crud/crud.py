@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from sqlalchemy import asc, desc, and_, or_
+from sqlalchemy.sql.expression import true, false
 from fastapi.responses import JSONResponse
 import os, sys
 
@@ -243,5 +244,26 @@ def crud_get_indiv_notifications(db: Session, user_id):
         .filter(and_(or_(tNotifications.user_id == user_id, tNotifications.user_id.is_(None)), tNotifications.type == 1))\
             .order_by(desc(tNotifications.created_at)).all()
 
+def crud_get_unread_notifications_count(db: Session, user_id):
+    return db.query(tNotifications)\
+        .filter(\
+            and_(
+                or_(tNotifications.user_id == user_id, tNotifications.user_id.is_(None)),\
+                tNotifications.type == 1,\
+                tNotifications.is_read.is_not(True)
+            )\
+        ).count()
 
-
+def crud_update_unread_check(db: Session, user_id, notification_id):
+    notification_obj = db.query(tNotifications)\
+        .filter(\
+            and_(
+                or_(tNotifications.user_id == user_id, tNotifications.user_id.is_(None)),\
+                tNotifications.id == notification_id
+            )\
+        ).first()
+    # 個人宛のメッセージのみ更新対象
+    if notification_obj.type == 1:
+        notification_obj.is_read = True
+        # データを確定
+        db.commit()
