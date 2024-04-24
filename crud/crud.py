@@ -267,3 +267,68 @@ def crud_update_unread_check(db: Session, user_id, notification_id):
         notification_obj.is_read = True
         # データを確定
         db.commit()
+
+# ------------------------
+# マイページ画面用のCRUD
+# ------------------------
+# トレーニング内訳の円グラフの情報を取得する
+def crud_get_training_pie_chart(db: Session, user_id, start_date, end_date):
+    statement = text(
+        """
+        SELECT
+            ROUND(COUNT(pa.part_no) * 100.0 / SUM(COUNT(*)) OVER()) AS pct,
+            pa.part_no,
+            pa.part_name,
+            pa.part_image_file
+        FROM t_user_training_achievements AS ta
+        INNER JOIN m_trainings AS tr
+        ON ta.training_no = tr.training_no
+        INNER JOIN m_parts AS pa
+        ON tr.part_no = pa.part_no
+        WHERE ta.user_id = :user_id
+        AND ta.created_at BETWEEN :start_date AND :end_date
+        GROUP BY pa.part_no, pa.part_name, pa.part_image_file
+        ORDER BY pa.part_no ASC;
+        """
+    )
+
+    params = [
+        {
+            "user_id": user_id,
+            "start_date": str(start_date) + " 00:00:00",
+            "end_date": str(end_date) + " 23:59:59"
+        }
+    ]
+    result = db.execute(statement, params)
+    return result
+
+# トレーニングボリュームの折れ線グラフを取得する
+def crud_get_total_volume_chart(db: Session, user_id, start_date, end_date):
+    statement = text(
+        """
+        SELECT
+            sum(ta.reps_achieve * ta.kgs_achieve) as total_volume,
+            pa.part_no,
+            pa.part_name,
+            substring(to_char(ta.created_at, 'YYYY-MM-DD'), 1, 10) as datetime
+        FROM t_user_training_achievements AS ta
+        INNER JOIN m_trainings AS tr
+        ON ta.training_no = tr.training_no
+        INNER JOIN m_parts AS pa
+        ON tr.part_no = pa.part_no
+        WHERE ta.user_id = :user_id
+        AND ta.created_at BETWEEN :start_date AND :end_date
+        GROUP BY pa.part_no, pa.part_name, datetime
+        ORDER BY datetime, pa.part_no ASC;
+        """
+    )
+
+    params = [
+        {
+            "user_id": user_id,
+            "start_date": str(start_date) + " 00:00:00",
+            "end_date": str(end_date) + " 23:59:59"
+        }
+    ]
+    result = db.execute(statement, params)
+    return result
