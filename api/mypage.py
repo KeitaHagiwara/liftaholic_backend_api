@@ -96,26 +96,36 @@ async def get_user_total_volume_data(uid: str, db: Session = Depends(get_db)):
                     'volume_data': [
                         {
                             'volume': float(t.total_volume),
+                            'time_elapsed': float(t.time_elapsed_sec / 60),
                             'part_name': t.part_name,
                             'datetime': t.datetime
                         }
                     ],
-                    'volume_max': float(t.total_volume) * 1.2,
-                    'volume_min': float(t.total_volume) * 0.8
+                    'volume_max': float(t.total_volume),
+                    'volume_min': float(t.total_volume),
+                    'time_elapsed_max': float(t.time_elapsed_sec / 60),
+                    'time_elapsed_min': float(t.time_elapsed_sec / 60),
                 }
             else:
                 training_volume_data[key]['volume_data'].append(
                     {
                         'volume': float(t.total_volume),
+                        'time_elapsed': float(t.time_elapsed_sec / 60),
                         'part_name': t.part_name,
                         'datetime': t.datetime
                     }
                 )
-                # 最大値と最小値を取得する
+                # トータルボリュームの最大値と最小値を取得する
                 if training_volume_data[key]['volume_max'] < float(t.total_volume):
                     training_volume_data[key]['volume_max'] = float(t.total_volume)
                 if training_volume_data[key]['volume_min'] > float(t.total_volume):
                     training_volume_data[key]['volume_min'] = float(t.total_volume)
+
+                # 経過時間の最大値と最小値を取得する
+                if training_volume_data[key]['time_elapsed_max'] < float(t.time_elapsed_sec / 60):
+                    training_volume_data[key]['time_elapsed_max'] = float(t.time_elapsed_sec / 60)
+                if training_volume_data[key]['time_elapsed_min'] > float(t.time_elapsed_sec / 60):
+                    training_volume_data[key]['time_elapsed_min'] = float(t.time_elapsed_sec / 60)
 
         statusCode = 200
         statusMessage = "ユーザーのトレーニングボリュームのデータを取得しました。"

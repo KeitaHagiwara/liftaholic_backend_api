@@ -308,6 +308,7 @@ def crud_get_total_volume_chart(db: Session, user_id, start_date, end_date):
         """
         SELECT
             sum(ta.reps_achieve * ta.kgs_achieve) as total_volume,
+            sum(cast(left(ta.time_elapsed, 2) as int) * 60 + cast(right(ta.time_elapsed, 2) as int)) as time_elapsed_sec,
             pa.part_no,
             pa.part_name,
             substring(to_char(ta.created_at, 'YYYY-MM-DD'), 1, 10) as datetime
